@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Search the Month You Want</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-outline-primary mt-3">Search</button>
+    </form>
+
+    {% if expenses %}
+    <h2 class="mt-5">Monthly Report</h2>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th scope="col">Expense Name</th>
+                <th scope="col">Date</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expenses %}
+            <tr>
+                <td>{{ expense.name }}</td>
+                <td>{{ expense.date }}</td>
+                <td class="text-success">${{ expense.amount }}</td>
+                <td>{{ expense.category }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+        <p><strong>Total: ${{ total_expenses }}</strong></p>
+    </div>
+    {% else %}
+    <div class="alert alert-warning mt-4">
+        No expenses found for the selected month and year.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

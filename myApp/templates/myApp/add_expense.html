@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="display-4 mb-4 text-center">Add Expense</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <div class="text-center mt-3">
+            <button type="submit" class="btn btn-outline-primary btn-lg">Add Expense</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
