@@ -2,6 +2,7 @@ from django.views.generic import TemplateView, FormView, CreateView, ListView
 from .models import Expense, Category
 from .forms import ExpenseForm, CategoryForm, ReportForm, CategoryReportForm
 from django.urls import reverse_lazy
+import json
 
 
 # Create your views here.
@@ -67,5 +68,8 @@ class CategoryReportView(FormView):
         context['expenses'] = expenses
         context['total_expenses'] = total_expenses
         context['budget_breach'] = category.check_budget_breach()
+        context['expenses_list'] = json.dumps([expense.name for expense in expenses])
+        context['amounts_list'] = json.dumps([float(expense.amount) for expense in expenses])
+
         return self.render_to_response(context)
 

@@ -2,16 +2,22 @@
 {% load django_bootstrap5 %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Search the Category You Want</h2>
+<div class="container mt-2">
+    <h3 class="mb-4 text-center">Search the Category You Want</h3>
     <form method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
-        <button type="submit" class="btn btn-outline-primary mt-3">Search</button>
+        <button type="submit" class="btn btn-outline-primary mb-3">Search</button>
     </form>
 
     {% if expenses %}
-    <h2 class="mt-5">Category Report</h2>
+
+    <div class="container mb-5">
+        <div style="height: 400px;"> 
+        <canvas id="categoryChart"></canvas>
+    </div>
+    </div>
+
     <table class="table table-striped mt-3">
         <thead>
             <tr>
@@ -47,5 +53,43 @@
         No expenses found for the selected month and year.
     </div>
     {% endif %}
+
+
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+
+    const categoryChart = new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ expenses_list|safe }},
+            datasets: [{
+                label: 'Expenses',
+                data: {{ amounts_list|safe }},
+                backgroundColor: [
+                        '#FFCDD2', // Light Red
+                        '#FFE0B2', // Light Orange
+                        '#BBDEFB', // Light Blue
+                        '#C8E6C9', // Light Green
+                        '#F8BBD0', // Light Pink
+                        '#B2EBF2', // Light Cyan
+                        '#D1C4E9', // Lavender 
+                        '#E1BEE7', // Light Purple
+                        '#FFF9C4', // Light Yellow                       
+                        '#FFECB3'  // Light Amber
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+</script>
+
+
 {% endblock %}
