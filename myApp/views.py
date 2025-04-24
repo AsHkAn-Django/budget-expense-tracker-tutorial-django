@@ -66,5 +66,6 @@ class CategoryReportView(FormView):
         context = self.get_context_data()
         context['expenses'] = expenses
         context['total_expenses'] = total_expenses
+        print(category.check_budget_breach())
         return self.render_to_response(context)
 
