@@ -3,6 +3,7 @@ from .models import Expense, Category
 from .forms import ExpenseForm, CategoryForm, ReportForm, CategoryReportForm
 from django.urls import reverse_lazy
 import json
+from .tasks import send_alert_email
 
 
 # Create your views here.
@@ -15,6 +16,12 @@ class AddExpenseView(CreateView):
     form_class = ExpenseForm
     template_name = 'myApp/add_expense.html'
     success_url = reverse_lazy('home')
+    
+    def form_valid(self, form):
+        categ = Category.objects.filter(name=form.cleaned_data['category'])
+        if categ.check_budget_breach():
+            send_alert_email(categ.name, self.user)
+        return super().form_valid(form)
 
 
 class AddCategoryView(CreateView):
