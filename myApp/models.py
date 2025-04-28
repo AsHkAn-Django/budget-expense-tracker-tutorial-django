@@ -1,11 +1,13 @@
 from django.db import models
 from django.db.models import Sum
+from django.conf import settings
 
 
 class Category(models.Model):
-    name = models.CharField(unique=True, max_length=264)
+    name = models.CharField(max_length=264)
     budget = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='categories')
+    
     class Meta:
         verbose_name_plural = 'categories'
 

@@ -19,8 +19,13 @@ class AddExpenseView(CreateView):
     template_name = 'myApp/add_expense.html'
     success_url = reverse_lazy('home')
     
+    def get_form(self):
+        form = super().get_form()
+        form.fields['category'].queryset = Category.objects.filter(author=self.request.user)
+        return form
+    
     def form_valid(self, form):
-        categ = Category.objects.get(name=form.cleaned_data['category'])
+        categ = Category.objects.get(name=form.cleaned_data['category'], author=self.request.user)
         if categ.check_budget_breach():
             send_alert_email.delay(categ.name, self.request.user.email)
             messages.error(self.request, f'Your category "{categ}" has overreached the limit!')
@@ -36,9 +41,10 @@ class AddCategoryView(CreateView):
     def form_valid(self, form):
         """Duplicate Checker."""
         category_name = form.cleaned_data.get('name')
-        if Category.objects.filter(name__iexact=category_name).exists():
+        if Category.objects.filter(author=self.request.user, name__iexact=category_name).exists():
             form.add_error('name', 'This category already exists.')
             return self.form_invalid(form)
+        form.instance.author = self.request.user
         return super().form_valid(form)
 
 
