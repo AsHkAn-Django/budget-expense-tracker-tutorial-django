@@ -1,8 +1,10 @@
 from django.views.generic import TemplateView, FormView, CreateView, ListView
-from .models import Expense, Category
-from .forms import ExpenseForm, CategoryForm, ReportForm, CategoryReportForm
 from django.urls import reverse_lazy
 import json
+from django.contrib import messages
+
+from .models import Expense, Category
+from .forms import ExpenseForm, CategoryForm, ReportForm, CategoryReportForm
 from .tasks import send_alert_email
 
 
@@ -18,9 +20,10 @@ class AddExpenseView(CreateView):
     success_url = reverse_lazy('home')
     
     def form_valid(self, form):
-        categ = Category.objects.filter(name=form.cleaned_data['category'])
+        categ = Category.objects.get(name=form.cleaned_data['category'])
         if categ.check_budget_breach():
-            send_alert_email(categ.name, self.user)
+            send_alert_email.delay(categ.name, self.request.user.email)
+            messages.error(self.request, f'Your category "{categ}" has overreached the limit!')
         return super().form_valid(form)
 
 
