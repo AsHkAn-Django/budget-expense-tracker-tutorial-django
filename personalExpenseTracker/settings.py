@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # Third party apps
     "django_bootstrap5",
     'django_extensions',
+    'django_celery_beat',
 
     'myApp',
 ]

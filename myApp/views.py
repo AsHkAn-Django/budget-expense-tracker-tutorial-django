@@ -25,7 +25,7 @@ class AddExpenseView(CreateView):
         return form
     
     def form_valid(self, form):
-        categ = Category.objects.get(name=form.cleaned_data['category'], author=self.request.user)
+        categ = Category.objects.get(name=form.cleaned_data['category'], author=self.request.user   )
         if categ.check_budget_breach():
             send_alert_email.delay(categ.name, self.request.user.email)
             messages.error(self.request, f'Your category "{categ}" has overreached the limit!')
