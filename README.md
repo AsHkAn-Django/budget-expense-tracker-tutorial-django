@@ -108,8 +108,8 @@ then add this to settings.py
 # ...
 
 # Celery settings
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+result_backend = "redis://localhost:6379/0"
 
 # Email 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
