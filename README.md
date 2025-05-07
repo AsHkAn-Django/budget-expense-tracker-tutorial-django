@@ -107,9 +107,9 @@ then add this to settings.py
 # personalExpenseTracker/settings.py
 # ...
 
-# Celery settings
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-result_backend = "redis://localhost:6379/0"
+# Use Redis as broker and backend
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 
 # Email 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -289,6 +289,27 @@ now go to admin panel and create a periodic task
    - Task: ```yourapp.tasks.check_all_users_budget```
    - be sure it's enabled
    - Interval: Create a new Interval (e.g., every 10 minutes).
+ 
 
+Now wee need for open terminal to run 1.Django 2.Redis 3.Celery-worker 4.Celery-beat:
+1. run your django server
+```shell
+python manage.py runserver
+```
+
+2. run redis server
+```shell
+redis-server
+```
+
+3. run celery worker
+```shell
+celery -A personalExpenseTracker worker --loglevel=info
+```
+
+4. run celery-beat
+```shell
+celery -A personalExpenseTracker beat --loglevel=info
+```
 
 ```FINISHED```
