@@ -37,17 +37,29 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                <li>
+                    <form action="{% url 'users:logout' %}" method="post">
+                        <button type="submit" class="nav-link px-2 text-white">Logout</button>
+                        {% csrf_token %}
+                    </form>
+                </li>
+                {% else %}
+                <li><a href="{% url 'users:login' %}" class="nav-link px-2 text-white">Login</a></li>
+                <li><a href="{% url 'users:signup' %}" class="nav-link px-2 text-white">Signup</a></li>
+
+                {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'add_expense' %}">Add Expense</a>
+                        <a class="nav-link" href="{% url 'myApp:add_expense' %}">Add Expense</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'add_category' %}">Add Category</a>
+                        <a class="nav-link" href="{% url 'myApp:add_category' %}">Add Category</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'monthly_report' %}">Monthly Report</a>
+                        <a class="nav-link" href="{% url 'myApp:monthly_report' %}">Monthly Report</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'category_report' %}">Category Report</a>
+                        <a class="nav-link" href="{% url 'myApp:category_report' %}">Category Report</a>
                     </li>
                 </ul>
             </div>

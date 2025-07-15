@@ -17,13 +17,17 @@ class AddExpenseView(CreateView):
     model = Expense
     form_class = ExpenseForm
     template_name = 'myApp/add_expense.html'
-    success_url = reverse_lazy('home')
-    
-    def get_form(self):
-        form = super().get_form()
-        form.fields['category'].queryset = Category.objects.filter(author=self.request.user)
+    success_url = reverse_lazy('myApp:home')
+
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        user = self.request.user
+        if user.is_authenticated:
+            form.fields['category'].queryset = Category.objects.filter(author=user)
+        else:
+            form.fields['category'].queryset = Category.objects.none()
         return form
-    
+
     def form_valid(self, form):
         categ = Category.objects.get(name=form.cleaned_data['category'], author=self.request.user   )
         if categ.check_budget_breach():
@@ -36,7 +40,7 @@ class AddCategoryView(CreateView):
     model = Category
     form_class = CategoryForm
     template_name = 'myApp/add_category.html'
-    success_url = reverse_lazy('add_expense')
+    success_url = reverse_lazy('myApp:add_expense')
 
     def form_valid(self, form):
         """Duplicate Checker."""
@@ -59,18 +63,21 @@ class MonthlyReportView(FormView):
 
         total_expenses = sum(expense.amount for expense in expenses)
 
-        context = self.get_context_data(form=form)
+        # Add chart data by category
+        category_totals = {}
+        for expense in expenses:
+            category = str(expense.category)
+            category_totals[category] = category_totals.get(category, 0) + float(expense.amount)
 
+        labels = list(category_totals.keys())
+        data = list(category_totals.values())
+
+        context = self.get_context_data(form=form)
         context['expenses'] = expenses
         context['total_expenses'] = total_expenses
+        context['chart_labels'] = json.dumps(labels)
+        context['chart_data'] = json.dumps(data)
         return self.render_to_response(context)
-
-    def form_invalid(self, form):
-        context = self.get_context_data(form=form)
-        context['expenses'] = Expense.objects.none()
-        context['total_expenses'] = 0
-        return self.render_to_response(context)
-
 
 class CategoryReportView(FormView):
     form_class = CategoryReportForm

@@ -10,6 +10,7 @@ click-repl==0.3.0
 colorama==0.4.6
 cron-descriptor==1.4.5
 decorator==5.2.1
+dj-database-url==3.0.1
 Django==5.2
 django-bootstrap5==25.1
 django-celery-beat==2.8.0
@@ -17,14 +18,17 @@ django-decouple==2.1
 django-extensions==4.1
 django-timezone-field==7.1
 executing==2.2.0
+gunicorn==23.0.0
 ipython==9.1.0
 ipython_pygments_lexers==1.1.1
 jedi==0.19.2
 kombu==5.5.3
 matplotlib-inline==0.1.7
+packaging==25.0
 parso==0.8.4
 pexpect==4.9.0
 prompt_toolkit==3.0.51
+psycopg2-binary==2.9.10
 ptyprocess==0.7.0
 pure_eval==0.2.3
 Pygments==2.19.1
@@ -39,3 +43,4 @@ traitlets==5.14.3
 tzdata==2025.2
 vine==5.1.0
 wcwidth==0.2.13
+whitenoise==6.9.0

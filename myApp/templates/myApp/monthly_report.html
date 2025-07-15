@@ -41,5 +41,38 @@
         No expenses found for the selected month and year.
     </div>
     {% endif %}
+
+
+    <div class="container my-5">
+    <div style="height: 400px;">
+        <canvas id="monthlyChart"></canvas>
+    </div>
 </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+
+    const monthlyChart = new Chart(monthlyCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Expenses by Category',
+                data: {{ chart_data|safe }},
+                backgroundColor: [
+                    '#FFCDD2', '#FFE0B2', '#BBDEFB', '#C8E6C9', '#F8BBD0',
+                    '#B2EBF2', '#D1C4E9', '#E1BEE7', '#FFF9C4', '#FFECB3'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+</script>
+
 {% endblock %}

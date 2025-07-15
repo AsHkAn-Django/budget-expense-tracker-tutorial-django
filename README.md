@@ -1,14 +1,14 @@
-# Expense Analytics Dashboard 💸📊
+# Expense Analytics Dashboard
 
 A smart expense tracker that visualizes your spending with interactive charts, sends you alerts when you exceed your budget, and keeps your finances in check.
 
-## 🚀 Features
+##  Features
 
-- 📈 Expense analytics dashboard with charts
-- 📂 Category-based budget alerts
-- 📬 Email notifications on budget breaches
-- 🔁 Background task processing with Celery
-- 🧾 Clean UI for tracking and managing expenses
+-  Expense analytics dashboard with charts
+-  Category-based budget alerts
+-  Email notifications on budget breaches
+-  Background task processing with Celery
+-  Clean UI for tracking and managing expenses
 
 ## 🔧 Tech Stack
 
@@ -18,14 +18,14 @@ A smart expense tracker that visualizes your spending with interactive charts, s
 - Chart.js or Recharts (JS)
 - Bootstrap / Tailwind for frontend styling
 
-## 🧠 Key Concepts Covered
+##  Key Concepts Covered
 
 - Data aggregation and filtering
 - Background job scheduling
 - Sending emails via Django
 - Real-time data visualization
 
-## ⚙️ Setup Instructions
+##  Setup Instructions
 
 1. **Clone the repo**
    ```bash
@@ -111,11 +111,11 @@ then add this to settings.py
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
-# Email 
+# Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True 
+EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
@@ -196,12 +196,12 @@ class AddExpenseView(CreateView):
     form_class = ExpenseForm
     template_name = 'myApp/add_expense.html'
     success_url = reverse_lazy('home')
-    
+
     def get_form(self):
         form = super().get_form()
         form.fields['category'].queryset = Category.objects.filter(author=self.request.user)
         return form
-    
+
     def form_valid(self, form):
         categ = Category.objects.get(name=form.cleaned_data['category'], author=self.request.user)
         # if category has breached call the task for sending the email
@@ -235,13 +235,13 @@ def send_alert_email(categ, user_email):
               message=message,
               from_email=None,
               recipient_list=[user_email])
-    
-# we added this task so it loops through users and their categories and if the the category is breached we use the task above to send them an email alert    
+
+# we added this task so it loops through users and their categories and if the the category is breached we use the task above to send them an email alert
 @shared_task
 def check_all_users_budget():
     Users = get_user_model()
     users = Users.objects.all()
-    
+
     for user in users:
         categories = Category.objects.filter(author=user)
         for categ in categories:
