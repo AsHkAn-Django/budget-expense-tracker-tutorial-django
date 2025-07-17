@@ -2,75 +2,46 @@
 {% load django_bootstrap5 %}
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Personal Expense Tracker</title>
     {% bootstrap_css %}
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .navbar {
-            margin-bottom: 30px;
-        }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .nav-link {
-            font-weight: 500;
-        }
-        .btn-primary {
-            font-weight: 500;
-        }
-    </style>
 </head>
 <body>
-    <!-- Navbar for Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Expense Tracker</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <div class="container">
+            <a class="navbar-brand mx-auto" href="#">Expense Tracker</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                {% if user.is_authenticated %}
-                <li>
-                    <form action="{% url 'users:logout' %}" method="post">
-                        <button type="submit" class="nav-link px-2 text-white">Logout</button>
-                        {% csrf_token %}
-                    </form>
-                </li>
-                {% else %}
-                <li><a href="{% url 'users:login' %}" class="nav-link px-2 text-white">Login</a></li>
-                <li><a href="{% url 'users:signup' %}" class="nav-link px-2 text-white">Signup</a></li>
 
-                {% endif %}
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'myApp:add_expense' %}">Add Expense</a>
+                        <form action="{% url 'users:logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link btn btn-link text-white px-2" style="text-decoration:none;">Logout</button>
+                        </form>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'myApp:add_category' %}">Add Category</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'myApp:monthly_report' %}">Monthly Report</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'myApp:category_report' %}">Category Report</a>
-                    </li>
+                    {% else %}
+                    <li class="nav-item"><a href="{% url 'users:login' %}" class="nav-link px-2 text-white">Login</a></li>
+                    <li class="nav-item"><a href="{% url 'users:signup' %}" class="nav-link px-2 text-white">Signup</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link px-2" href="{% url 'myApp:add_expense' %}">Add Expense</a></li>
+                    <li class="nav-item"><a class="nav-link px-2" href="{% url 'myApp:add_category' %}">Add Category</a></li>
+                    <li class="nav-item"><a class="nav-link px-2" href="{% url 'myApp:monthly_report' %}">Monthly Report</a></li>
+                    <li class="nav-item"><a class="nav-link px-2" href="{% url 'myApp:category_report' %}">Category Report</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content Area -->
-    <div class="container mx-5">
+    <div class="container">
         {% bootstrap_messages %}
         {% block content %}
-        <!-- Content will be injected here -->
         {% endblock content %}
     </div>
 
