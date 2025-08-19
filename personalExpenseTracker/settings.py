@@ -193,6 +193,10 @@ LOGIN_REDIRECT_URL = 'myApp:home'
 LOGOUT_REDIRECT_URL = 'myApp:home'
 
 
+# Custom user model
+AUTH_USER_MODEL = 'users.CustomUser'
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
