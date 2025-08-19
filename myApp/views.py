@@ -2,18 +2,20 @@ from django.views.generic import TemplateView, FormView, CreateView, ListView
 from django.urls import reverse_lazy
 import json
 from django.contrib import messages
+from django.db.models import Sum
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Expense, Category
 from .forms import ExpenseForm, CategoryForm, ReportForm, CategoryReportForm
 from .tasks import send_alert_email
 
 
-# Create your views here.
+
 class IndexView(TemplateView):
     template_name = 'myApp/index.html'
 
 
-class AddExpenseView(CreateView):
+class AddExpenseView(LoginRequiredMixin, CreateView):
     model = Expense
     form_class = ExpenseForm
     template_name = 'myApp/add_expense.html'
@@ -29,14 +31,14 @@ class AddExpenseView(CreateView):
         return form
 
     def form_valid(self, form):
-        categ = Category.objects.get(name=form.cleaned_data['category'], author=self.request.user   )
+        categ = Category.objects.get(name=form.cleaned_data['category'], author=self.request.user)
         if categ.check_budget_breach():
             send_alert_email.delay(categ.name, self.request.user.email)
             messages.error(self.request, f'Your category "{categ}" has overreached the limit!')
         return super().form_valid(form)
 
 
-class AddCategoryView(CreateView):
+class AddCategoryView(LoginRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
     template_name = 'myApp/add_category.html'
@@ -52,25 +54,30 @@ class AddCategoryView(CreateView):
         return super().form_valid(form)
 
 
-class MonthlyReportView(FormView):
+class MonthlyReportView(LoginRequiredMixin, FormView):
     template_name = 'myApp/monthly_report.html'
     form_class = ReportForm
 
     def form_valid(self, form):
         month = form.cleaned_data['month']
         year = form.cleaned_data['year']
-        expenses = Expense.objects.filter(date__month=month, date__year=year)
+        expenses = Expense.objects.filter(
+            category__author=self.request.user,
+            date__month=month,
+            date__year=year
+        )
 
         total_expenses = sum(expense.amount for expense in expenses)
 
         # Add chart data by category
-        category_totals = {}
-        for expense in expenses:
-            category = str(expense.category)
-            category_totals[category] = category_totals.get(category, 0) + float(expense.amount)
+        category_totals = (
+            expenses.values('category__name')
+            .annotate(total=Sum('amount'))
+            .order_by('category__name')
+        )
 
-        labels = list(category_totals.keys())
-        data = list(category_totals.values())
+        labels = [item['category__name'] for item in category_totals]
+        data = [float(item['total']) for item in category_totals]
 
         context = self.get_context_data(form=form)
         context['expenses'] = expenses
@@ -79,14 +86,15 @@ class MonthlyReportView(FormView):
         context['chart_data'] = json.dumps(data)
         return self.render_to_response(context)
 
-class CategoryReportView(FormView):
+
+class CategoryReportView(LoginRequiredMixin, FormView):
     form_class = CategoryReportForm
     template_name = 'myApp/category_report.html'
 
     def form_valid(self, form):
         category = form.cleaned_data['category']
-        expenses = Expense.objects.filter(category=category)
-        total_expenses = sum(expense.amount for expense in expenses)
+        expenses = Expense.objects.filter(category=category, category__author=self.request.user)
+        total_expenses = expenses.aggregate(total=Sum('amount'))['total'] or 0
         context = self.get_context_data()
         context['expenses'] = expenses
         context['total_expenses'] = total_expenses

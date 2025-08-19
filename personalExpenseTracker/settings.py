@@ -192,6 +192,8 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 LOGIN_REDIRECT_URL = 'myApp:home'
 LOGOUT_REDIRECT_URL = 'myApp:home'
 
+LOGIN_URL = 'users:login'
+
 
 # Custom user model
 AUTH_USER_MODEL = 'users.CustomUser'

@@ -1,22 +1,27 @@
 from django.db import models
 from django.db.models import Sum
 from django.conf import settings
+from django.db.models import Sum
+
 
 
 class Category(models.Model):
     name = models.CharField(max_length=264)
     budget = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='categories')
-    
+
     class Meta:
         verbose_name_plural = 'categories'
 
     def __str__(self):
         return self.name
-    
+
     def check_budget_breach(self):
         total = self.expenses.aggregate(total=Sum('amount'))['total'] or 0
         return total > self.budget if self.budget is not None else False
+
+    def get_total_amount(self):
+        return self.expenses.aggregate(total=Sum('amount'))['total'] or 0
 
 
 class Expense(models.Model):
@@ -27,4 +32,3 @@ class Expense(models.Model):
 
     def __str__(self):
         return f"{self.name}: {self.amount}"
-  

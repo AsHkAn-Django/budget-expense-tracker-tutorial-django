@@ -9,6 +9,7 @@ migrations/
 dump.rdb
 dump.json
 PING
+logs/
 
 
 # Byte-compiled / optimized / DLL files
