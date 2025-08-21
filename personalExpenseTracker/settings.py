@@ -50,9 +50,11 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     'django_extensions',
     'django_celery_beat',
+    'rest_framework',
 
     'myApp',
     'users',
+
 ]
 
 MIDDLEWARE = [

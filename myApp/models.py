@@ -7,8 +7,17 @@ from django.db.models import Sum
 
 class Category(models.Model):
     name = models.CharField(max_length=264)
-    budget = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='categories')
+    budget = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='categories'
+    )
 
     class Meta:
         verbose_name_plural = 'categories'
@@ -28,7 +37,11 @@ class Expense(models.Model):
     name = models.CharField(max_length=264)
     date = models.DateTimeField(auto_now_add=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='expenses')
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name='expenses'
+    )
 
     def __str__(self):
         return f"{self.name}: {self.amount}"
