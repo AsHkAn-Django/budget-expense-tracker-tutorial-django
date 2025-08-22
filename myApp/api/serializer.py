@@ -27,7 +27,7 @@ class CategorySerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'author']
 
     def get_budget_breach(self, obj):
-        return obj.get_budget_breach()
+        return obj.check_budget_breach()
 
     def get_total_expenses(self, obj):
         return obj.get_total_amount()
