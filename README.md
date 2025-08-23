@@ -289,7 +289,7 @@ now go to admin panel and create a periodic task
    - Task: ```yourapp.tasks.check_all_users_budget```
    - be sure it's enabled
    - Interval: Create a new Interval (e.g., every 10 minutes).
- 
+
 
 Now wee need for open terminal to run 1.Django 2.Redis 3.Celery-worker 4.Celery-beat:
 1. run your django server
@@ -311,5 +311,14 @@ celery -A personalExpenseTracker worker --loglevel=info
 ```shell
 celery -A personalExpenseTracker beat --loglevel=info
 ```
+
+## For getting token you can use Curl
+```
+curl -X POST http://127.0.0.1:8000/api/v1/token/ `
+     -H "Content-Type: application/json" `
+     -d "{""email"": ""<your-email-here>"", ""password"": ""<your-password-here>""}"
+```
+
+### after getting your token use ModHead and always send the ```access``` not ```refresh```
 
 ```FINISHED```

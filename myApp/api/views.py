@@ -23,3 +23,34 @@ class CategoryAPIView(APIView):
                                                context={'request':request})
         return Response(serialized_categs.data, status=status.HTTP_200_OK)
 
+    def post(self, request):
+        """Create a new Category."""
+        serializer = CreateCategorySerializer(data=request.data,
+                                              context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"success": "The category has been created"},
+                        status=status.HTTP_201_CREATED)
+
+
+class ExpenseAPIView(APIView):
+    """
+    A view for showing and creating a new Expense.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Show the list of expenses."""
+        expenses = Expense.objects.filter(category__author=request.user)
+        serialized_exp = ExpenseSerializer(expenses, many=True,
+                                           context={'request': request})
+        return Response(serialized_exp.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Create a new expense."""
+        serializer = CreateExpenseSerializer(data=request.data,
+                                             context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"Success": "The expense has been saved."},
+                        status=status.HTTP_201_CREATED)
