@@ -10,4 +10,5 @@ urlpatterns = [
     path('expenses/', views.ExpenseAPIView.as_view(), name='expenses_api'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('analytics/', views.AnalyticsAPIView.as_view(), name='analytics_api'),
 ]
