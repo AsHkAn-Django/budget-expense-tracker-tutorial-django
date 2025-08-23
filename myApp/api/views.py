@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
 from django.db.models import Sum, Count, Max, Min, Avg
 from django.db.models.functions import Round
@@ -24,10 +25,24 @@ class CategoryAPIView(APIView):
     def get(self, request):
         """Bring the list of catogories for this user."""
         categories = Category.objects.filter(author=request.user)
-        serialized_categs = CategorySerializer(categories,
+
+        # filtering if exists
+        name = request.query_params.get("name")
+        if name:
+            categories = categories.filter(name__iexact=name)
+        budget = request.query_params.get("budget")
+        if budget:
+            categories = categories.filter(budget__lte=budget)
+
+        # we do pagination inside the view because it's apiview and wont happen automatically
+        paginator = PageNumberPagination()
+        paginator.page_size = 2
+        result_page = paginator.paginate_queryset(categories, request)
+
+        serialized_categs = CategorySerializer(result_page,
                                                many=True,
                                                context={'request':request})
-        return Response(serialized_categs.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serialized_categs.data)
 
     def post(self, request):
         """Create a new Category."""
@@ -48,9 +63,30 @@ class ExpenseAPIView(APIView):
     def get(self, request):
         """Show the list of expenses."""
         expenses = Expense.objects.filter(category__author=request.user)
-        serialized_exp = ExpenseSerializer(expenses, many=True,
+
+        # filter if exists
+        name = request.query_params.get('name')
+        if name:
+            expenses = expenses.filter(name__iexact=name)
+        date = request.query_params.get('date')
+        if date:
+            print(date)
+            expenses = expenses.filter(date__date=date)
+        amount = request.query_params.get('amount')
+        if amount:
+            expenses = expenses.filter(amount__lte=amount)
+        category = request.query_params.get('category')
+        if category:
+            expenses = expenses.filter(category__name__iexact=category)
+
+        # we do pagination inside the view because it's apiview and wont happen automatically
+        paginator = PageNumberPagination()
+        paginator.page_size = 2
+        result_page = paginator.paginate_queryset(expenses, request)
+
+        serialized_exp = ExpenseSerializer(result_page, many=True,
                                            context={'request': request})
-        return Response(serialized_exp.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serialized_exp.data)
 
     def post(self, request):
         """Create a new expense."""
