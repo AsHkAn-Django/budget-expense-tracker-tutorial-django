@@ -300,6 +300,8 @@ python manage.py runserver
 2. run redis server
 ```shell
 redis-server
+#or
+docker run -it --rm --name redis -p 6379:6379 redis
 ```
 
 3. run celery worker
